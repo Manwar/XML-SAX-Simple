@@ -4,9 +4,13 @@ package XML::SAX::Simple;
 
 XML::SAX::Simple - SAX version of XML::Simple.
 
+=head1 VERSION
+
+Version 0.03
+
 =cut
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use strict;
 use warnings;
@@ -98,6 +102,13 @@ Currently maintained by Mohammad S Anwar (MANWAR), << <mohammad.anwar AT yahoo.c
 =head1 SEE ALSO
 
 L<XML::Simple>, L<XML::SAX>.
+
+COPYRIGHT AND LICENCE
+
+This is free  software. You  may use it and distribute it under the same terms as
+Perl itself.
+
+Copyright (C) 2001 Matt Sergeant, matt@sergeant.org
 
 =cut
 
