@@ -1,6 +1,7 @@
 README
 Changes
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 lib/XML/SAX/Simple.pm
 t/1_XMLin.t
