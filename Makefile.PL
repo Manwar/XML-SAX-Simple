@@ -17,8 +17,8 @@ WriteMakefile(
         'Test::More'   => 0,
     },
     PREREQ_PM          => {
-        'XML::Simple'         => 1.06,
-        'XML::SAX'            => 0.02,
+        'XML::Simple'         => 2.22,
+        'XML::SAX'            => 0.99,
         'XML::Handler::Trees' => 0.02,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
