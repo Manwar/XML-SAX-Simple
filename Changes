@@ -1,0 +1,11 @@
+Revision history for Perl extension XML::SAX::Simple.
+
+0.03  2016-02-01 MANWAR
+      - Importing to GitHub since taking over maintaining task.
+
+0.02  2001-11-21 MSERGEANT
+      - ..
+
+0.01  2001-10-31 MSERGEANT
+      - Original version; created by h2xs 1.21 with options
+	-A -X -n XML::SAX::Simple
