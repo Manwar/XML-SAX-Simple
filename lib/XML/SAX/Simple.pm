@@ -97,7 +97,7 @@ sub build_tree {
 
 Matt Sergeant, matt@sergeant.org
 
-Currently maintained by Mohammad S Anwar (MANWAR), << <mohammad.anwar AT yahoo.com> >>
+Currently maintained by Mohammad S Anwar (MANWAR), C<< <mohammad.anwar AT yahoo.com> >>
 
 =head1 SEE ALSO
 
