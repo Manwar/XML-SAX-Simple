@@ -6,11 +6,11 @@ XML::SAX::Simple - SAX version of XML::Simple.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 use strict;
 use warnings;
@@ -103,7 +103,7 @@ Currently maintained by Mohammad S Anwar (MANWAR), C<< <mohammad.anwar AT yahoo.
 
 L<XML::Simple>, L<XML::SAX>.
 
-COPYRIGHT AND LICENCE
+=head1 COPYRIGHT AND LICENCE
 
 This is free  software. You  may use it and distribute it under the same terms as
 Perl itself.

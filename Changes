@@ -1,5 +1,9 @@
 Revision history for Perl extension XML::SAX::Simple.
 
+0.04  2016-02-27 MANWAR
+      - Added LICENSE file.
+      - Fixed typo in the pod.
+
 0.03  2016-02-25 MANWAR
       - Importing to GitHub since taking over maintaining task.
 
