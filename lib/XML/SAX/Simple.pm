@@ -6,12 +6,13 @@ XML::SAX::Simple - SAX version of XML::Simple.
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
+use 5.006;
 use strict;
 use warnings;
 use Data::Dumper;

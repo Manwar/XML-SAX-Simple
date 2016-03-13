@@ -10,6 +10,7 @@ WriteMakefile(
     AUTHOR             => 'Matt Sergeant, <matt@sergeant.org>',
     VERSION_FROM       => 'lib/XML/SAX/Simple.pm',
     LICENSE            => 'perl_5',
+    MIN_PERL_VERSION   => 5.006,
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
