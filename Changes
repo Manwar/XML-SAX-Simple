@@ -1,5 +1,8 @@
 Revision history for Perl extension XML::SAX::Simple.
 
+0.06  2016-03-23 MANWAR
+      - Added section "REPOSITORY" to the pod document.
+
 0.05  2016-03-13 MANWAR
       - Added MIN_PERL_VERSION to Makefile.PL script.
       - Added 'use 5.006;' to the package XML::SAX::Simple.
