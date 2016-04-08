@@ -6,11 +6,11 @@ XML::SAX::Simple - SAX version of XML::Simple.
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 use 5.006;
 use strict;
@@ -87,7 +87,7 @@ sub build_tree {
             $tree = $parser->parse_file($string);
         }
         else {
-            $tree = $parser->parse_string($string);
+            $tree = $parser->parse_string($$string);
         }
     }
 

@@ -1,5 +1,8 @@
 Revision history for Perl extension XML::SAX::Simple.
 
+0.07  2016-04-08 MANWAR
+      - Proposed fix for CPAN Testers FAILED reports.
+
 0.06  2016-03-23 MANWAR
       - Added section "REPOSITORY" to the pod document.
 
