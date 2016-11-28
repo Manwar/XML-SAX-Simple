@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use File::Spec;
+use XML::SAX::Simple;
 
 eval { require Storable; };
 unless($INC{'Storable.pm'}) {
@@ -21,9 +22,118 @@ unless(-e $SrcFile) {
   exit 0;
 }
 
-print "1..19\n";
+print "1..20\n";
 
 my $t = 1;
+
+# Initialise test data
+
+my $Expected  = {
+          'server' => {
+                        'sahara' => {
+                                      'osversion' => '2.6',
+                                      'osname' => 'solaris',
+                                      'address' => [
+                                                     '10.0.0.101',
+                                                     '10.0.1.101'
+                                                   ]
+                                    },
+                        'gobi' => {
+                                    'osversion' => '6.5',
+                                    'osname' => 'irix',
+                                    'address' => '10.0.0.102'
+                                  },
+                        'kalahari' => {
+                                        'osversion' => '2.0.34',
+                                        'osname' => 'linux',
+                                        'address' => [
+                                                       '10.0.0.103',
+                                                       '10.0.1.103'
+                                                     ]
+                                      }
+                      }
+        };
+
+ok(1, CopyFile($SrcFile, $XMLFile));  # Start with known source file
+unlink($CacheFile);                   # Ensure there are ...
+
+ok(2, -s $XMLFile); # Make sure we have xml file.
+
+ok(3, ! -e $CacheFile);               # ... no cache files lying around
+
+my $opt = XMLin($XMLFile);
+ok(4, DataCompare($opt, $Expected));  # Got what we expected
+ok(5, ! -e $CacheFile);               # And no cache file was created
+PassTime(time());                     # Ensure cache file will be newer
+
+$opt = XMLin($XMLFile, cache => 'storable');
+ok(6, DataCompare($opt, $Expected));  # Got what we expected again
+ok(7, -e $CacheFile);                 # But this time a cache file was created
+my $t0 = (stat($CacheFile))[9];       # Remember cache timestamp
+PassTime($t0);
+
+$opt = XMLin($XMLFile, cache => 'storable');
+ok(8, DataCompare($opt, $Expected));  # Got what we expected from the cache
+my $t1 = (stat($CacheFile))[9];       # Check cache timestamp
+ok(9, $t0, $t1);                      # has not changed
+
+PassTime(time());
+$t0 = time();
+open(FILE, ">>$XMLFile");             # Touch the XML file
+print FILE "\n";
+close(FILE);
+$opt = XMLin($XMLFile, cache => 'storable');
+ok(10, DataCompare($opt, $Expected));  # Got what we expected
+my $t2 = (stat($CacheFile))[9];       # Check cache timestamp
+ok(11, $t1 != $t2);                   # has changed
+
+unlink($XMLFile);
+ok(12, ! -e $XMLFile);                # Original XML file is gone
+open(FILE, ">$XMLFile");              # Re-create it (empty)
+close(FILE);
+utime($t1, $t1, $XMLFile);            # but wind back the clock
+$t0 = (stat($XMLFile))[9];            # Skip these tests if that didn't work
+if($t0 == $t1) {
+  $opt = XMLin($XMLFile, cache => 'storable');
+  ok(13, DataCompare($opt, $Expected)); # Got what we expected from the cache
+  ok(14, ! -s $XMLFile);                # even though the XML file is empty
+}
+else {
+  print STDERR "no utime - skipping test 12...";
+  ok(13, 1);
+  ok(14, 1);
+}
+
+PassTime($t2);
+open(FILE, ">$XMLFile");              # Write some new data to the XML file
+print FILE qq(<opt one="1" two="2"></opt>\n);
+close(FILE);
+
+$opt = XMLin($XMLFile);            # Parse with no caching
+ok(15, DataCompare($opt, { one => 1, two => 2})); # Got what we expected
+$t0 = (stat($CacheFile))[9];          # And timestamp on cache file
+my $s0 = (-s $CacheFile);
+ok(16, $t0 == $t2);                   # has not changed
+
+                                      # Parse again with caching enabled
+$opt = XMLin($XMLFile, cache => 'storable');
+                                      # Came through the cache
+ok(17, DataCompare($opt, { one => 1, two => 2}));
+$t1 = (stat($CacheFile))[9];          # which has been updated
+my $s1 = (-s $CacheFile);
+ok(18, ($t0 != $t1) || ($s0 != $s1)); # Content changes but date may not on Win32
+
+ok(19, CopyFile($SrcFile, $XMLFile)); # Put back the original file
+PassTime($t1);
+$opt = XMLin($XMLFile, cache => 'storable');
+ok(20, DataCompare($opt, $Expected)); # Got what we expected
+
+# Clean up and go
+
+unlink($CacheFile);
+unlink($XMLFile);
+exit(0);
+
 
 ##############################################################################
 #                   S U P P O R T   R O U T I N E S
@@ -133,117 +243,3 @@ sub PassTime {
     sleep 1;
   }
 }
-
-
-##############################################################################
-#                      T E S T   R O U T I N E S
-##############################################################################
-
-use XML::SAX::Simple;
-
-# Initialise test data
-
-my $Expected  = {
-          'server' => {
-                        'sahara' => {
-                                      'osversion' => '2.6',
-                                      'osname' => 'solaris',
-                                      'address' => [
-                                                     '10.0.0.101',
-                                                     '10.0.1.101'
-                                                   ]
-                                    },
-                        'gobi' => {
-                                    'osversion' => '6.5',
-                                    'osname' => 'irix',
-                                    'address' => '10.0.0.102'
-                                  },
-                        'kalahari' => {
-                                        'osversion' => '2.0.34',
-                                        'osname' => 'linux',
-                                        'address' => [
-                                                       '10.0.0.103',
-                                                       '10.0.1.103'
-                                                     ]
-                                      }
-                      }
-        };
-
-ok(1, CopyFile($SrcFile, $XMLFile));  # Start with known source file
-unlink($CacheFile);                   # Ensure there are ...
-
-ok(2, ! -e $CacheFile);               # ... no cache files lying around
-
-my $opt = XMLin($XMLFile);
-ok(3, DataCompare($opt, $Expected));  # Got what we expected
-ok(4, ! -e $CacheFile);               # And no cache file was created
-PassTime(time());                     # Ensure cache file will be newer
-
-$opt = XMLin($XMLFile, cache => 'storable');
-ok(5, DataCompare($opt, $Expected));  # Got what we expected again
-ok(6, -e $CacheFile);                 # But this time a cache file was created
-my $t0 = (stat($CacheFile))[9];       # Remember cache timestamp
-PassTime($t0);
-
-$opt = XMLin($XMLFile, cache => 'storable');
-ok(7, DataCompare($opt, $Expected));  # Got what we expected from the cache
-my $t1 = (stat($CacheFile))[9];       # Check cache timestamp
-ok(8, $t0, $t1);                      # has not changed
-
-PassTime(time());
-$t0 = time();
-open(FILE, ">>$XMLFile");             # Touch the XML file
-print FILE "\n";
-close(FILE);
-$opt = XMLin($XMLFile, cache => 'storable');
-ok(9, DataCompare($opt, $Expected));  # Got what we expected
-my $t2 = (stat($CacheFile))[9];       # Check cache timestamp
-ok(10, $t1 != $t2);                   # has changed
-
-unlink($XMLFile);
-ok(11, ! -e $XMLFile);                # Original XML file is gone
-open(FILE, ">$XMLFile");              # Re-create it (empty)
-close(FILE);
-utime($t1, $t1, $XMLFile);            # but wind back the clock
-$t0 = (stat($XMLFile))[9];            # Skip these tests if that didn't work
-if($t0 == $t1) {
-  $opt = XMLin($XMLFile, cache => 'storable');
-  ok(12, DataCompare($opt, $Expected)); # Got what we expected from the cache
-  ok(13, ! -s $XMLFile);                # even though the XML file is empty
-}
-else {
-  print STDERR "no utime - skipping test 12...";
-  ok(12, 1);
-  ok(13, 1);
-}
-
-PassTime($t2);
-open(FILE, ">$XMLFile");              # Write some new data to the XML file
-print FILE qq(<opt one="1" two="2"></opt>\n);
-close(FILE);
-
-$opt = XMLin($XMLFile);            # Parse with no caching
-ok(14, DataCompare($opt, { one => 1, two => 2})); # Got what we expected
-$t0 = (stat($CacheFile))[9];          # And timestamp on cache file
-my $s0 = (-s $CacheFile);
-ok(15, $t0 == $t2);                   # has not changed
-
-                                      # Parse again with caching enabled
-$opt = XMLin($XMLFile, cache => 'storable');
-                                      # Came through the cache
-ok(16, DataCompare($opt, { one => 1, two => 2}));
-$t1 = (stat($CacheFile))[9];          # which has been updated
-my $s1 = (-s $CacheFile);
-ok(17, ($t0 != $t1) || ($s0 != $s1)); # Content changes but date may not on Win32
-
-ok(18, CopyFile($SrcFile, $XMLFile)); # Put back the original file
-PassTime($t1);
-$opt = XMLin($XMLFile, cache => 'storable');
-ok(19, DataCompare($opt, $Expected)); # Got what we expected
-
-# Clean up and go
-
-unlink($CacheFile);
-unlink($XMLFile);
-exit(0);
-

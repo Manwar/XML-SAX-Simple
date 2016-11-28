@@ -6,11 +6,11 @@ XML::SAX::Simple - SAX version of XML::Simple.
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 use 5.006;
 use strict;
@@ -98,11 +98,11 @@ sub build_tree {
 
 Matt Sergeant, matt@sergeant.org
 
+Currently maintained by Mohammad S Anwar (MANWAR), C<< <mohammad.anwar AT yahoo.com> >>
+
 =head1 REPOSITORY
 
 L<https://github.com/manwar/XML-SAX-Simple>
-
-Currently maintained by Mohammad S Anwar (MANWAR), C<< <mohammad.anwar AT yahoo.com> >>
 
 =head1 SEE ALSO
 
